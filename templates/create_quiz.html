@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Quiz - QuizForge{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px;">
+    <h2 style="margin-bottom: 1.5rem; text-align: center; color: var(--secondary);">Start a New Quiz</h2>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem;">Give your quiz a title to begin adding questions.</p>
+    <form method="POST">
+        <div class="form-group">
+            <label for="title">Quiz Title</label>
+            <input type="text" id="title" name="title" class="form-control" required placeholder="e.g. History of Rome">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem; margin-top: 1rem; border-radius: 12px;">Next: Add Questions</button>
+    </form>
+</div>
+{% endblock %}

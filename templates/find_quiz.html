@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Take Quiz - QuizForge{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px;">
+    <h2 style="margin-bottom: 1.5rem; text-align: center; color: var(--secondary);">Enter Quiz ID</h2>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem;">Have a specific quiz ID? Enter it below to start the challenge.</p>
+    
+    <form method="POST">
+        <div class="form-group">
+            <label for="quiz_id">Quiz ID</label>
+            <input type="text" id="quiz_id" name="quiz_id" class="form-control" required placeholder="e.g. a4518093" style="text-align: center; font-family: monospace; font-size: 1.2rem; letter-spacing: 2px;">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem; margin-top: 1rem; border-radius: 12px;">Go to Quiz</button>
+    </form>
+    
+    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e2e8f0; text-align: center;">
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Don't have an ID? <a href="{{ url_for('index') }}" style="color: var(--primary); font-weight: 600;">Browse common quizzes</a></p>
+    </div>
+</div>
+{% endblock %}

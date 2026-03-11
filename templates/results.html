@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Results - QuizForge{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 800px;">
+    <div class="result-box">
+        <h2 style="color: var(--secondary); margin-bottom: 1rem;">Quiz Complete!</h2>
+        <div class="score">{{ score }} / {{ total }}</div>
+        <p style="font-size: 1.2rem; color: var(--text-muted);">
+            {% if (score / total) >= 0.8 %}
+                Excellent work! You're a quiz wizard.
+            {% elif (score / total) >= 0.5 %}
+                Good job! Keep studying to master the details.
+            {% else %}
+                Keep practicing! Knowledge is power.
+            {% endif %}
+        </p>
+        <div style="margin-top: 2rem;">
+            <a href="{{ url_for('quiz', quiz_id=quiz_id) }}" class="btn btn-primary">Try Quiz Again</a>
+            <a href="{{ url_for('index') }}" class="btn btn-outline" style="margin-left: 1rem;">Back to Home</a>
+        </div>
+    </div>
+
+    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 2rem 0;">
+
+    <h3 style="margin-bottom: 1.5rem; color: var(--secondary);">Review Your Answers</h3>
+    {% for res in results %}
+    <div class="result-item {% if res.is_correct %}correct{% else %}incorrect{% endif %}" style="margin-bottom: 1.5rem;">
+        <div style="font-weight: 600; margin-bottom: 0.5rem;">{{ loop.index }}. {{ res.question }}</div>
+        <div style="font-size: 0.95rem;">
+            Your Answer: <span style="font-weight: 600;">{{ res.user_answer }}</span>
+            {% if not res.is_correct %}
+                | Correct Answer: <span style="font-weight: 600; color: #166534;">{{ res.correct_answer }}) {{ res.correct_text }}</span>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - QuizForge{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto;">
+    <div class="card" style="margin-bottom: 3rem;">
+        <h2 style="margin-bottom: 2rem; text-align: center; color: var(--secondary);">Manage Your Profile</h2>
+        <form method="POST">
+            <input type="hidden" name="update_profile" value="1">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" class="form-control" required value="{{ user.name }}">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" required value="{{ user.email }}">
+                </div>
+                <div class="form-group">
+                    <label for="mobile">Mobile Number</label>
+                    <input type="tel" id="mobile" name="mobile" class="form-control" required value="{{ user.mobile }}">
+                </div>
+                <div class="form-group">
+                    <label for="institution">Institution</label>
+                    <input type="text" id="institution" name="institution" class="form-control" required value="{{ user.institution }}">
+                </div>
+            </div>
+            <div style="margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 12px;">Update Profile</button>
+            </div>
+        </form>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <h2 style="color: var(--secondary); margin: 0;">My Created Quizzes</h2>
+        <form method="GET" style="display: flex; gap: 0.5rem; min-width: 300px;">
+            <input type="text" name="search" value="{{ request.args.get('search', '') }}" class="form-control" placeholder="Search by Title or ID..." style="margin: 0;">
+            <button type="submit" class="btn btn-primary">Search</button>
+            {% if request.args.get('search') %}
+                <a href="{{ url_for('profile') }}" class="btn btn-outline">Reset</a>
+            {% endif %}
+        </form>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+        {% for quiz in quizzes %}
+        <div class="card" style="margin: 0; min-height: 250px; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #e2e8f0;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <h3 style="color: var(--primary);">{{ quiz.title }}</h3>
+                    <span style="padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; background: {% if quiz.is_public %}#dcfce7{% else %}#fee2e2{% endif %}; color: {% if quiz.is_public %}#166534{% else %}#991b1b{% endif %};">
+                        {{ "PUBLIC" if quiz.is_public else "PRIVATE" }}
+                    </span>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">ID: <code style="background: #f1f5f9; padding: 2px 5px; border-radius: 4px;">{{ quiz.id }}</code></p>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Created: {{ quiz.created_at }}</p>
+            </div>
+            <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                <a href="{{ url_for('quiz_results', quiz_id=quiz.id) }}" class="btn btn-primary" style="text-align: center; font-size: 0.9rem; background: var(--secondary);">View Student Results</a>
+                <a href="{{ url_for('quiz_created', quiz_id=quiz.id) }}" class="btn btn-outline" style="text-align: center; font-size: 0.9rem;">Copy Link/ID</a>
+                <a href="{{ url_for('toggle_visibility', quiz_id=quiz.id) }}" class="btn {% if quiz.is_public %}btn-outline{% else %}btn-primary{% endif %}" style="text-align: center; font-size: 0.9rem;">
+                    {{ "Make Private" if quiz.is_public else "Make Public" }}
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+            <p style="color: var(--text-muted);">You haven't created any quizzes yet.</p>
+            <a href="{{ url_for('create_quiz') }}" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">Create My First Quiz</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

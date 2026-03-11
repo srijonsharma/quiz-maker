@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="hero">
+    <h1>QuizForge</h1>
+    <p>Forge your own quizzes and challenge your knowledge. Create, share, and track performance across any subject.</p>
+    <div style="display: flex; gap: 1.5rem; justify-content: center;">
+        <a href="{{ url_for('find_quiz') }}" class="btn btn-outline" style="padding: 1rem 2.5rem; font-size: 1.2rem;">Take Quiz (Enter ID)</a>
+        <a href="{{ url_for('create_quiz') }}" class="btn btn-primary"
+            style="padding: 1rem 2.5rem; font-size: 1.2rem;">Create a New Quiz</a>
+    </div>
+</section>
+
+<div style="margin-top: 4rem;">
+    <h2 style="text-align: center; margin-bottom: 2rem; color: var(--secondary);">Publicly Shared Quizzes</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+        {% for quiz in quizzes %}
+        <div class="card"
+            style="margin: 0; min-height: 200px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">{{ quiz.title }}</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">ID: {{ quiz.id }}</p>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Created: {{ quiz.created_at }}</p>
+            </div>
+            <div style="margin-top: 1.5rem;">
+                <a href="{{ url_for('quiz', quiz_id=quiz.id) }}" class="btn btn-outline"
+                    style="width: 100%; display: block; text-align: center;">Take Quiz</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

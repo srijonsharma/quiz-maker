@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Quiz Created - QuizForge{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; text-align: center;">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+    <h2 style="color: var(--secondary); margin-bottom: 0.5rem;">Quiz Created Successfully!</h2>
+    <p style="color: var(--text-muted); margin-bottom: 2rem;">Your quiz "<strong>{{ quiz.title }}</strong>" is ready. By default, it is <strong>Private</strong>. Only people with the ID or Link can access it.</p>
+
+    <div style="background: #f8fafc; padding: 2rem; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 2rem; text-align: left;">
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase;">Quiz ID</label>
+            <div style="display: flex; gap: 0.5rem;">
+                <input type="text" readonly value="{{ quiz.id }}" id="quiz-id" class="form-control" style="font-family: monospace; font-weight: 700; background: white;">
+                <button onclick="copyToClipboard('quiz-id')" class="btn btn-outline" style="white-space: nowrap;">Copy ID</button>
+            </div>
+        </div>
+
+        <div>
+            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase;">Shareable Link</label>
+            <div style="display: flex; gap: 0.5rem;">
+                <input type="text" readonly value="{{ quiz_url }}" id="quiz-url" class="form-control" style="background: white;">
+                <button onclick="copyToClipboard('quiz-url')" class="btn btn-outline" style="white-space: nowrap;">Copy Link</button>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 1rem; justify-content: center;">
+        <a href="{{ url_for('profile') }}" class="btn btn-primary" style="padding: 0.8rem 2rem;">Manage My Quizzes</a>
+        <a href="{{ url_for('quiz', quiz_id=quiz.id) }}" class="btn btn-outline" style="padding: 0.8rem 2rem;">Take Quiz Now</a>
+    </div>
+</div>
+
+<script>
+function copyToClipboard(elementId) {
+    const copyText = document.getElementById(elementId);
+    copyText.select();
+    copyText.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(copyText.value);
+    
+    const originalText = event.target.innerText;
+    event.target.innerText = "Copied!";
+    event.target.style.background = "#dcfce7";
+    event.target.style.borderColor = "#22c55e";
+    event.target.style.color = "#166534";
+    
+    setTimeout(() => {
+        event.target.innerText = originalText;
+        event.target.style.background = "";
+        event.target.style.borderColor = "";
+        event.target.style.color = "";
+    }, 2000);
+}
+</script>
+{% endblock %}

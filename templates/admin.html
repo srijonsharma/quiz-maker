@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - QuizForge{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+    <h1 style="color: var(--secondary); margin-bottom: 2rem;">Platform Administration</h1>
+
+    <!-- Tabs/Sections -->
+    <div style="display: flex; gap: 1rem; margin-bottom: 3rem;">
+        <div class="card" style="flex: 1; margin: 0; text-align: center; border: 2px solid var(--primary);">
+            <h3 style="color: var(--primary);">Users</h3>
+            <p style="font-size: 2rem; font-weight: 700;">{{ users|length }}</p>
+        </div>
+        <div class="card" style="flex: 1; margin: 0; text-align: center; border: 2px solid var(--secondary);">
+            <h3 style="color: var(--secondary);">Total Quizzes</h3>
+            <p style="font-size: 2rem; font-weight: 700;">{{ quizzes|length }}</p>
+        </div>
+        <div class="card" style="flex: 1; margin: 0; text-align: center; border: 2px solid var(--accent);">
+            <h3 style="color: var(--accent);">Attempts</h3>
+            <p style="font-size: 2rem; font-weight: 700;">{{ attempts|length }}</p>
+        </div>
+    </div>
+
+    <!-- Users Management -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <h2 style="color: var(--secondary); margin: 0;">User Management</h2>
+        <form method="GET" style="display: flex; gap: 0.5rem; min-width: 300px;">
+            <input type="text" name="user_search" value="{{ request.args.get('user_search', '') }}" class="form-control" placeholder="Search Users..." style="margin: 0;">
+            <button type="submit" class="btn btn-primary">Search</button>
+            {% if request.args.get('user_search') %}
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">Reset</a>
+            {% endif %}
+        </form>
+    </div>
+    <div class="card" style="margin: 0 0 3rem 0; max-width: 100%; overflow-x: auto; padding: 0;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                <tr>
+                    <th style="padding: 1rem;">Name</th>
+                    <th style="padding: 1rem;">Email</th>
+                    <th style="padding: 1rem;">Role</th>
+                    <th style="padding: 1rem;">Institution</th>
+                    <th style="padding: 1rem; text-align: center;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 1rem;">{{ u.name }}</td>
+                    <td style="padding: 1rem;">{{ u.email }}</td>
+                    <td style="padding: 1rem;">
+                        <span style="padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; background: {% if u.is_admin %}#dbeafe{% else %}#f1f5f9{% endif %}; color: {% if u.is_admin %}#1e40af{% else %}#475569{% endif %};">
+                            {{ "Admin" if u.is_admin else "Teacher/Student" }}
+                        </span>
+                    </td>
+                    <td style="padding: 1rem;">{{ u.institution }}</td>
+                    <td style="padding: 1rem; text-align: center;">
+                        {% if u.id != current_user.id %}
+                        <a href="{{ url_for('delete_user', user_id=u.id) }}" style="color: #ef4444; font-weight: 600;" onclick="return confirm('Delete this user permanently?')">Delete</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Quiz Management -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <h2 style="color: var(--secondary); margin: 0;">Quiz Management (Global)</h2>
+        <form method="GET" style="display: flex; gap: 0.5rem; min-width: 300px;">
+            <input type="text" name="quiz_search" value="{{ request.args.get('quiz_search', '') }}" class="form-control" placeholder="Search Quizzes..." style="margin: 0;">
+            <button type="submit" class="btn btn-primary">Search</button>
+            {% if request.args.get('quiz_search') %}
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">Reset</a>
+            {% endif %}
+        </form>
+    </div>
+    <div class="card" style="margin: 0 0 3rem 0; max-width: 100%; overflow-x: auto; padding: 0;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                <tr>
+                    <th style="padding: 1rem;">Quiz Title</th>
+                    <th style="padding: 1rem;">Creator</th>
+                    <th style="padding: 1rem;">Status</th>
+                    <th style="padding: 1rem;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for q in quizzes %}
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 1rem;"><strong>{{ q.title }}</strong><br><small style="color: var(--text-muted);">{{ q.id }}</small></td>
+                    <td style="padding: 1rem;">{{ q.creator }}</td>
+                    <td style="padding: 1rem;">
+                        <span style="font-size: 0.8rem;">{{ "Public" if q.is_public else "Private" }}</span>
+                    </td>
+                    <td style="padding: 1rem; display: flex; gap: 1rem;">
+                        <a href="{{ url_for('quiz_results', quiz_id=q.id) }}" style="color: var(--primary);">Results</a>
+                        |
+                        <a href="{{ url_for('delete_quiz', quiz_id=q.id) }}" style="color: #ef4444;" onclick="return confirm('Delete this quiz and all its data?')">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
