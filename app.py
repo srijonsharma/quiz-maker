@@ -31,7 +31,8 @@ class DBWrapper:
 def get_db():
     db_url = os.environ.get('DATABASE_URL')
     if db_url:
-        conn = psycopg2.connect(db_url)
+        # PostgreSQL Connection with SSL and Timeout for Vercel
+        conn = psycopg2.connect(db_url, sslmode='require', connect_timeout=5)
         return DBWrapper(conn, True)
     else:
         conn = sqlite3.connect(DATABASE)
