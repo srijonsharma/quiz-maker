@@ -17,51 +17,36 @@ class DBWrapper:
         self.is_postgres = is_postgres
 
     def execute(self, query, params=None):
-        if self.is_postgres:
-            query = query.replace('?', '%s')
-            cursor = self.conn.cursor(cursor_factory=RealDictCursor)
-        else:
-            cursor = self.conn.cursor()
-        
+        cursor = self.conn.cursor(cursor_factory=RealDictCursor) if self.is_postgres else self.conn.cursor()
+        query = query.replace('?', '%s') if self.is_postgres else query
         if params:
             cursor.execute(query, params)
         else:
             cursor.execute(query)
         return cursor
 
-    def commit(self):
-        self.conn.commit()
-
-    def close(self):
-        self.conn.close()
+    def commit(self): self.conn.commit()
+    def close(self): self.conn.close()
 
 def get_db():
     db_url = os.environ.get('DATABASE_URL')
     if db_url:
-        # PostgreSQL Connection for Vercel/Supabase
-        url = urlparse.urlparse(db_url)
-        conn = psycopg2.connect(
-            dbname=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
+        conn = psycopg2.connect(db_url)
         return DBWrapper(conn, True)
     else:
-        # SQLite Connection for Local
         conn = sqlite3.connect(DATABASE)
         conn.row_factory = sqlite3.Row
         return DBWrapper(conn, False)
 
 def init_db():
-    if not os.path.exists(DATABASE):
-        with app.app_context():
-            db = get_db()
-            with open('schema.sql', mode='r') as f:
-                db.cursor().executescript(f.read())
-            db.commit()
-            db.close()
+    # Only run locally
+    if not os.environ.get('DATABASE_URL') and not os.path.exists(DATABASE):
+        db = get_db()
+        with open('schema.sql', mode='r') as f:
+            # Note: executescript is SQLite only, we use the SQL editor for Supabase
+            db.conn.cursor().executescript(f.read())
+        db.commit()
+        db.close()
 
 @app.context_processor
 def inject_user():
