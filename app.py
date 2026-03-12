@@ -289,11 +289,11 @@ def quiz_results(quiz_id):
     # Date Filter
     date_f = request.args.get('date_filter')
     if date_f == 'today':
-        query += "AND attempt_date >= date('now') "
+        query += "AND attempt_date::date = CURRENT_DATE " if db.is_postgres else "AND date(attempt_date) = date('now') "
     elif date_f == 'last_7_days':
-        query += "AND attempt_date >= date('now', '-7 days') "
+        query += "AND attempt_date >= CURRENT_DATE - INTERVAL '7 days' " if db.is_postgres else "AND attempt_date >= date('now', '-7 days') "
     elif date_f == 'this_month':
-        query += "AND attempt_date >= date('now', 'start of month') "
+        query += "AND attempt_date >= date_trunc('month', CURRENT_DATE) " if db.is_postgres else "AND attempt_date >= date('now', 'start of month') "
 
     # Sorting
     sort = request.args.get('sort', 'date_desc')
