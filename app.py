@@ -31,8 +31,12 @@ class DBWrapper:
 def get_db():
     db_url = os.environ.get('DATABASE_URL')
     if db_url:
+        # Fix for Vercel/Postgres prefix mismatch
+        if db_url.startswith("postgres://"):
+            db_url = db_url.replace("postgres://", "postgresql://", 1)
+            
         # PostgreSQL Connection with SSL and Timeout for Vercel
-        conn = psycopg2.connect(db_url, sslmode='require', connect_timeout=5)
+        conn = psycopg2.connect(db_url, sslmode='require', connect_timeout=10)
         return DBWrapper(conn, True)
     else:
         conn = sqlite3.connect(DATABASE)
